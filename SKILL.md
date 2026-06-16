@@ -368,14 +368,6 @@ YAML and JSON skeletons users copy and fill. All sit at the skill root under `te
 | [Complete SDK Reference](references/complete-sdk-reference.md) | Full API documentation (5900+ lines)                            |
 | [Escalation](references/escalation.md)                         | Lookup order, iron rule, halt-vs-continue, worked examples      |
 
-### Related learnings
-
--
-  [`docs/solutions/developer-experience/skill-version-spdx-and-upstream-mirror-provenance.md`](../docs/solutions/developer-experience/skill-version-spdx-and-upstream-mirror-provenance.md)
-  is the worked precedent for this skill's `VERSION` banner, per-file SPDX headers, and pinned-SHA upstream-mirror
-  convention. Read that doc when refreshing the version pin, adding new bundled scripts/templates, or refreshing
-  `references/complete-sdk-reference.md` from upstream.
-
 ---
 
 ## Best Practices
