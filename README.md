@@ -1,72 +1,56 @@
-# Crawl4AI Claude Skill
+# Crawl4AI Agent Skill
 
-A comprehensive Claude skill for web crawling and data extraction using Crawl4AI. This skill enables Claude to scrape
-websites, extract structured data, handle JavaScript-heavy pages, crawl multiple URLs, and build automated web data
-pipelines.
+Scrape JavaScript-heavy sites and extract structured data via reusable CSS schemas. A portable agent skill that wraps
+the [Crawl4AI](https://crawl4ai.com/) CLI and Python SDK, written in the Anthropic SKILL.md format and consumable by any
+agent host that loads SKILL.md-format bundles (Claude Code, Codex, Cursor, OpenCode, Cline, and others).
+
+Verified against Crawl4AI library version `0.8.9` (pinned in [`VERSION`](VERSION)).
 
 ## Features
 
-- **Web Crawling**: Extract content from any website with full JavaScript support
-- **Data Extraction**: Schema-based CSS extraction (LLM-free) and LLM-based extraction
-- **Markdown Generation**: Clean, well-formatted markdown output optimized for LLM consumption
-- **Content Filtering**: Relevance-based filtering using BM25 and quality-based pruning
-- **Session Management**: Persistent sessions for authenticated crawling
-- **Batch Processing**: Concurrent multi-URL crawling
-- **CLI & SDK**: Both command-line interface and Python SDK support
+- **JS-aware crawling**: full headless-browser rendering with `wait_until=networkidle` defaults
+- **Schema-based extraction**: derive a CSS selector schema once via LLM, apply it forever with no further LLM cost
+- **LLM extraction**: per-request structured extraction when a schema is not worth deriving
+- **Content filtering**: BM25 relevance filter and quality-based pruning, plain markdown or markdown-fit output
+- **Concurrent batch crawling**: multi-URL processing with per-job concurrency caps
+- **Session management**: persistent sessions for authenticated, multi-step flows
+- **CLI and SDK**: both the `crwl` command-line tool and the `crawl4ai` Python SDK
 
 ## Installation
 
-### Claude Code (load directly from a directory)
+Clone the repo into the skills directory your agent host loads from:
 
 ```bash
+# Claude Code
 git clone https://github.com/brettdavies/crawl4ai-skill.git ~/.claude/skills/crawl4ai
 ```
 
-Claude Code reads `SKILL.md` at the directory root.
-
-### Claude Desktop (import a zip)
-
-Claude Desktop expects the zip to contain a single top-level directory whose name matches the skill. Stage the skill
-files under a `crawl4ai/` wrapper before zipping:
-
-```bash
-git clone https://github.com/brettdavies/crawl4ai-skill.git
-cd crawl4ai-skill
-mkdir -p /tmp/crawl4ai-pkg/crawl4ai
-cp -r SKILL.md VERSION references scripts tests templates evals fixtures /tmp/crawl4ai-pkg/crawl4ai/
-( cd /tmp/crawl4ai-pkg && zip -r crawl4ai.zip crawl4ai/ )
-```
-
-Then in Claude Desktop go to Settings → Developer → Import Skill and select `/tmp/crawl4ai-pkg/crawl4ai.zip`.
+For other agent hosts (Codex, Cursor, OpenCode, Cline, custom agents), clone into whichever directory your host scans
+for SKILL.md-format bundles. Refer to your host's documentation for the skills directory location. The bundle root
+contains `SKILL.md`, so the skill registers automatically once the directory is on the host's skills search path.
 
 ## Prerequisites
 
-This skill requires the Crawl4AI Python library:
+The skill calls into the Crawl4AI Python library, which must be installed in the runtime your agent uses:
 
 ```bash
 pip install crawl4ai
 crawl4ai-setup
-
-# Verify installation
 crawl4ai-doctor
 ```
 
-## Quick Start
+`crawl4ai-doctor` validates the install and confirms a headless browser is available.
 
-### CLI Usage (Recommended for Quick Tasks)
+## Quick start
+
+CLI:
 
 ```bash
-# Basic crawling - returns markdown
-crwl https://example.com
-
-# Get markdown output
-crwl https://example.com -o markdown
-
-# JSON output with cache bypass
+crwl https://example.com -c "wait_until=networkidle,page_timeout=60000" -o markdown
 crwl https://example.com -o json -v --bypass-cache
 ```
 
-### Python SDK Usage
+Python SDK:
 
 ```python
 import asyncio
@@ -80,65 +64,76 @@ async def main():
 asyncio.run(main())
 ```
 
+## Bundle layout
+
+| Path                                       | Contents                                                                                               |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| `SKILL.md`                                 | Entry point: trigger conditions, defaults, routing to specialized pipelines                            |
+| `references/`                              | Nine reference guides for CLI, SDK, extraction, filtering, anti-detection, URL discovery, escalation   |
+| `scripts/`                                 | Six PEP 723 helper scripts for crawl / extract / batch workflows                                       |
+| `templates/`                               | Reusable YAML/JSON templates for browser, crawler, filters, and extraction strategies                  |
+| `evals/`                                   | Four eval scenarios for verifying skill behavior end-to-end                                            |
+| `fixtures/`                                | Schema-generation reference fixture (sample HTML, expected schema, expected JSON output)               |
+| `tests/`                                   | Pytest suite covering basic crawling, markdown generation, extraction, advanced patterns, and fixtures |
+| `VERSION`                                  | Pinned Crawl4AI library version the skill is verified against                                          |
+| `LICENSE-APACHE`, `LICENSE-MIT`, `LICENSE` | Dual license texts and summary (SPDX `MIT OR Apache-2.0`)                                              |
+
 ## Documentation
 
-- **[SKILL.md](SKILL.md)** - Complete skill documentation with examples
-- **[CLI Guide](references/cli-guide.md)** - Command-line interface reference
-- **[SDK Guide](references/sdk-guide.md)** - Python SDK quick reference
-- **[Complete SDK Reference](references/complete-sdk-reference.md)** - Full API documentation (5900+ lines)
+- [SKILL.md](SKILL.md): complete skill documentation with examples
+- [CLI Guide](references/cli-guide.md): command-line interface reference
+- [SDK Guide](references/sdk-guide.md): Python SDK quick reference
+- [Complete SDK Reference](references/complete-sdk-reference.md): full API documentation (5900+ lines)
+- [Recipes](references/recipes.md): end-to-end task recipes (login flow, sitemap crawl, paginated extraction)
+- [Content Filters](references/content-filters.md): BM25 vs pruning vs LLMContentFilter trade-offs
+- [URL Discovery](references/url-discovery.md): sitemap, robots.txt, link-graph traversal
+- [Anti-Detection](references/anti-detection.md): init scripts, proxy config, undetected mode, CDP attachment
+- [Troubleshooting](references/troubleshooting.md): symptoms, causes, fixes
+- [Escalation](references/escalation.md): lookup order, halt-vs-continue criteria, worked examples
 
-## Common Use Cases
+## Common use cases
 
-### Documentation to Markdown
+### Documentation to markdown
 
 ```bash
 crwl https://docs.example.com -o markdown > docs.md
 ```
 
-### E-commerce Product Monitoring
+### E-commerce product monitoring
 
 ```bash
-# Generate schema once (uses LLM)
-./scripts/generate_schema.py https://shop.com "products with name, price, image" shop_schema.json
+# Derive the schema once (uses LLM)
+./scripts/generate_schema.py https://shop.example.com "products with name, price, image" shop_schema.json
 
 # Apply the saved schema (no LLM cost per request)
-./scripts/extract_with_schema.py https://shop.com shop_schema.json products.json
+./scripts/extract_with_schema.py https://shop.example.com shop_schema.json products.json
 ```
 
-### News Aggregation
+### News aggregation with relevance filtering
 
 ```bash
-# Multiple sources with filtering
 for url in news1.com news2.com news3.com; do
-  crwl "https://$url" -f filter_bm25.yml -o markdown-fit
+  crwl "https://$url" -f templates/filter_bm25.yml -o markdown-fit
 done
 ```
 
 ## Scripts
 
-The skill includes helper scripts in `scripts/`:
-
-- **basic_crawler.py** - One URL → markdown + screenshot
-- **batch_crawl.py** - Many URLs → markdown files
-- **batch_extract.py** - Many URLs + schema → JSON
-- **generate_schema.py** - Derive a reusable CSS schema (one-time LLM call)
-- **extract_with_schema.py** - Apply a saved schema (no LLM)
-- **extract_with_llm.py** - Per-request LLM extraction (expensive; one-off only)
+| Script                                               | Purpose                                              |
+| ---------------------------------------------------- | ---------------------------------------------------- |
+| `scripts/basic_crawler.py <url>`                     | One URL → markdown + screenshot                      |
+| `scripts/batch_crawl.py <urls.txt>`                  | Many URLs → markdown files                           |
+| `scripts/batch_extract.py <urls.txt> <schema.json>`  | Many URLs + schema → JSON                            |
+| `scripts/generate_schema.py <url> "<instruction>"`   | Derive a reusable CSS schema (one-time LLM call)     |
+| `scripts/extract_with_schema.py <url> <schema.json>` | Apply a saved schema (no LLM)                        |
+| `scripts/extract_with_llm.py <url> "<instruction>"`  | Per-request LLM extraction (expensive; one-off only) |
 
 ## Testing
-
-Run the test suite to verify the skill works correctly:
 
 ```bash
 cd tests
 python run_all_tests.py
 ```
-
-## Marketplace
-
-This skill is available on Claude Skills marketplaces:
-
-- [Skills.pub](https://skills.pub/)
 
 ## License
 
@@ -147,12 +142,8 @@ your option. SPDX identifier: `MIT OR Apache-2.0`. See [LICENSE](LICENSE) for th
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## Support
-
-For issues, questions, or feature requests, please open an issue on the GitHub repository.
+Contributions welcome. Open a pull request.
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md) for version history and updates.
+See [CHANGELOG.md](CHANGELOG.md).
