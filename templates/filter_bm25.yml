@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: MIT OR Apache-2.0
+# BM25ContentFilter template. Relevance-scored markdown extraction.
+# Copy, fill, pass via `crwl <url> -f filter_bm25.yml -o markdown-fit`.
+# Field reference: `references/content-filters.md`.
+
+type: "bm25"
+query: "<the topic you care about>"
+threshold: 1.0                # higher = stricter filter

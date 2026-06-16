@@ -33,7 +33,7 @@ files under a `crawl4ai/` wrapper before zipping:
 git clone https://github.com/brettdavies/crawl4ai-skill.git
 cd crawl4ai-skill
 mkdir -p /tmp/crawl4ai-pkg/crawl4ai
-cp -r SKILL.md references scripts tests /tmp/crawl4ai-pkg/crawl4ai/
+cp -r SKILL.md VERSION references scripts tests templates evals fixtures /tmp/crawl4ai-pkg/crawl4ai/
 ( cd /tmp/crawl4ai-pkg && zip -r crawl4ai.zip crawl4ai/ )
 ```
 
@@ -99,10 +99,10 @@ crwl https://docs.example.com -o markdown > docs.md
 
 ```bash
 # Generate schema once (uses LLM)
-python scripts/extraction_pipeline.py --generate-schema https://shop.com "extract products"
+./scripts/generate_schema.py https://shop.com "products with name, price, image" shop_schema.json
 
-# Use schema for extraction (no LLM costs)
-crwl https://shop.com -e extract_css.yml -s product_schema.json -o json
+# Apply the saved schema (no LLM cost per request)
+./scripts/extract_with_schema.py https://shop.com shop_schema.json products.json
 ```
 
 ### News Aggregation
@@ -118,9 +118,12 @@ done
 
 The skill includes helper scripts in `scripts/`:
 
-- **basic_crawler.py** - Simple markdown extraction
-- **batch_crawler.py** - Multi-URL processing
-- **extraction_pipeline.py** - Schema generation and extraction
+- **basic_crawler.py** - One URL → markdown + screenshot
+- **batch_crawl.py** - Many URLs → markdown files
+- **batch_extract.py** - Many URLs + schema → JSON
+- **generate_schema.py** - Derive a reusable CSS schema (one-time LLM call)
+- **extract_with_schema.py** - Apply a saved schema (no LLM)
+- **extract_with_llm.py** - Per-request LLM extraction (expensive; one-off only)
 
 ## Testing
 

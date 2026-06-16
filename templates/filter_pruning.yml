@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: MIT OR Apache-2.0
+# PruningContentFilter template. Quality-based markdown extraction (no query).
+# Copy, fill, pass via `crwl <url> -f filter_pruning.yml -o markdown-fit`.
+# Field reference: `references/content-filters.md`.
+
+type: "pruning"
+threshold: 0.48               # 0.0 keeps everything; 1.0 prunes aggressively
+threshold_type: "fixed"       # "fixed" or "dynamic"

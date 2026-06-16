@@ -1,0 +1,5 @@
+[
+  {"title": "Widget A", "price": "$10.00", "link": "/products/widget-a"},
+  {"title": "Widget B", "price": "$20.00", "link": "/products/widget-b"},
+  {"title": "Widget C", "price": "$30.00", "link": "/products/widget-c"}
+]

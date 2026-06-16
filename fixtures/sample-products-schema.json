@@ -1,0 +1,9 @@
+{
+  "name": "products",
+  "baseSelector": ".product-card",
+  "fields": [
+    {"name": "title", "selector": ".title", "type": "text"},
+    {"name": "price", "selector": ".price", "type": "text"},
+    {"name": "link", "selector": "a.link", "type": "attribute", "attribute": "href"}
+  ]
+}

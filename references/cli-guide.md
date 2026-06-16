@@ -1,32 +1,27 @@
 # Crawl4AI CLI Guide
-<!-- Reference: Tier 2 - Command-line interface for Crawl4AI -->
+
+Command-line interface for the Crawl4AI library. Pairs with [SDK Guide](sdk-guide.md) for programmatic use and the
+deeper [Complete SDK Reference](complete-sdk-reference.md).
 
 ## Table of Contents
-<!-- Lines 1-24 -->
 
-- [Crawl4AI CLI Guide](#crawl4ai-cli-guide)
-  - [Table of Contents](#table-of-contents)
-  - [Installation](#installation)
-  - [Basic Usage](#basic-usage)
-    - [Quick Example - Advanced Usage](#quick-example---advanced-usage)
-  - [Configuration](#configuration)
-    - [Browser Configuration](#browser-configuration)
-    - [Crawler Configuration](#crawler-configuration)
-    - [Extraction Configuration](#extraction-configuration)
-  - [Advanced Features](#advanced-features)
-    - [LLM Q\&A](#llm-qa)
-    - [Structured Data Extraction](#structured-data-extraction)
-    - [Content Filtering](#content-filtering)
-  - [Output Formats](#output-formats)
-  - [Complete Examples](#complete-examples)
-  - [Best Practices \& Tips](#best-practices--tips)
-  - [Recap](#recap)
-  - [See Also](#see-also)
+- [Installation](#installation)
+- [Basic Usage](#basic-usage)
+- [Configuration](#configuration)
+- [Browser Configuration](#browser-configuration)
+- [Crawler Configuration](#crawler-configuration)
+- [Extraction Configuration](#extraction-configuration)
+- [Advanced Features](#advanced-features)
+- [LLM Q&A](#llm-qa)
+- [Structured Data Extraction](#structured-data-extraction)
+- [Content Filtering](#content-filtering)
+- [Output Formats](#output-formats)
+- [Complete Examples](#complete-examples)
+- [Best Practices & Tips](#best-practices--tips)
 
 ---
 
 ## Installation
-<!-- Lines 27-38 -->
 
 The Crawl4AI CLI (`crwl`) is installed automatically with the library:
 
@@ -38,7 +33,6 @@ crawl4ai-setup
 ---
 
 ## Basic Usage
-<!-- Lines 39-68 -->
 
 The `crwl` command provides a simple interface to the Crawl4AI library:
 
@@ -56,8 +50,7 @@ crwl https://example.com -o json -v --bypass-cache
 crwl --example
 ```
 
-### Quick Example - Advanced Usage
-<!-- Lines 59-70 -->
+**Quick Example - Advanced Usage:**
 
 ```bash
 # Extract structured data using CSS schema
@@ -70,10 +63,8 @@ crwl "https://www.infoq.com/ai-ml-data-eng/" \
 ---
 
 ## Configuration
-<!-- Lines 51-160 -->
 
 ### Browser Configuration
-<!-- Lines 51-75 -->
 
 Browser settings via YAML file or command line:
 
@@ -96,17 +87,17 @@ crwl https://example.com -b "headless=true,viewport_width=1280,user_agent_mode=r
 
 **Key Parameters:**
 
-| Parameter | Description |
-|-----------|-------------|
-| `headless` | Run without GUI (true/false) |
-| `viewport_width` | Browser width in pixels |
-| `viewport_height` | Browser height in pixels |
+| Parameter         | Description                    |
+| ----------------- | ------------------------------ |
+| `headless`        | Run without GUI (true/false)   |
+| `viewport_width`  | Browser width in pixels        |
+| `viewport_height` | Browser height in pixels       |
 | `user_agent_mode` | "random" or specific UA string |
 
-For all browser parameters: [BrowserConfig Reference](complete-sdk-reference.md#1-browserconfig--controlling-the-browser) (lines 1977-2020)
+For all browser parameters:
+[BrowserConfig Reference](complete-sdk-reference.md#1-browserconfig--controlling-the-browser).
 
 ### Crawler Configuration
-<!-- Lines 76-110 -->
 
 Control crawling behavior:
 
@@ -135,18 +126,18 @@ crwl https://example.com -c "css_selector=#main,delay_before_return_html=2,scan_
 
 **Key Parameters:**
 
-| Parameter | Description |
-|-----------|-------------|
-| `cache_mode` | bypass, enabled, disabled |
-| `wait_until` | networkidle, domcontentloaded |
-| `page_timeout` | Max page load time (ms) |
-| `css_selector` | Focus on specific element |
+| Parameter        | Description                     |
+| ---------------- | ------------------------------- |
+| `cache_mode`     | bypass, enabled, disabled       |
+| `wait_until`     | networkidle, domcontentloaded   |
+| `page_timeout`   | Max page load time (ms)         |
+| `css_selector`   | Focus on specific element       |
 | `scan_full_page` | Enable infinite scroll handling |
 
-For all crawler parameters: [CrawlerRunConfig Reference](complete-sdk-reference.md#2-crawlerrunconfig--controlling-each-crawl) (lines 2020-2330)
+For all crawler parameters:
+[CrawlerRunConfig Reference](complete-sdk-reference.md#2-crawlerrunconfig--controlling-each-crawl).
 
 ### Extraction Configuration
-<!-- Lines 111-160 -->
 
 Two extraction types supported:
 
@@ -193,15 +184,13 @@ params:
   max_tokens: 1000
 ```
 
-For extraction strategies: [Extraction Strategies](complete-sdk-reference.md#extraction-strategies) (lines 4522-5429)
+For extraction strategies: [Extraction Strategies](complete-sdk-reference.md#extraction-strategies).
 
 ---
 
 ## Advanced Features
-<!-- Lines 161-230 -->
 
 ### LLM Q&A
-<!-- Lines 161-190 -->
 
 Ask questions about crawled content:
 
@@ -229,7 +218,6 @@ crwl https://example.com \
 - See [LiteLLM Providers](https://docs.litellm.ai/docs/providers) for full list
 
 ### Structured Data Extraction
-<!-- Lines 191-210 -->
 
 ```bash
 # CSS-based extraction
@@ -246,7 +234,6 @@ crwl https://example.com \
 ```
 
 ### Content Filtering
-<!-- Lines 211-230 -->
 
 Filter content for relevance:
 
@@ -266,90 +253,91 @@ threshold: 0.48
 crwl https://example.com -f filter_bm25.yml -o markdown-fit
 ```
 
-For content filtering: [Content Processing](complete-sdk-reference.md#content-processing) (lines 2481-3101)
+For content filtering: [Content Processing](complete-sdk-reference.md#content-processing).
 
 ---
 
 ## Output Formats
-<!-- Lines 231-240 -->
 
-| Format | Flag | Description |
-|--------|------|-------------|
-| `all` | `-o all` | Full crawl result including metadata |
-| `json` | `-o json` | Extracted structured data |
-| `markdown` | `-o markdown` or `-o md` | Raw markdown output |
-| `markdown-fit` | `-o markdown-fit` or `-o md-fit` | Filtered markdown |
+| Format         | Flag                             | Description                          |
+| -------------- | -------------------------------- | ------------------------------------ |
+| `all`          | `-o all`                         | Full crawl result including metadata |
+| `json`         | `-o json`                        | Extracted structured data            |
+| `markdown`     | `-o markdown` or `-o md`         | Raw markdown output                  |
+| `markdown-fit` | `-o markdown-fit` or `-o md-fit` | Filtered markdown                    |
 
 ---
 
 ## Complete Examples
-<!-- Lines 241-280 -->
 
-1. Basic Extraction
+**1. Basic Extraction:**
 
-    ```bash
-    crwl https://example.com \
-        -B browser.yml \
-        -C crawler.yml \
-        -o json
-    ```
+```bash
+crwl https://example.com \
+    -B browser.yml \
+    -C crawler.yml \
+    -o json
+```
 
-2. Structured Data Extraction
+**2. Structured Data Extraction:**
 
-    ```bash
-    crwl https://example.com \
-        -e extract_css.yml \
-        -s css_schema.json \
-        -o json \
-        -v
-    ```
+```bash
+crwl https://example.com \
+    -e extract_css.yml \
+    -s css_schema.json \
+    -o json \
+    -v
+```
 
-3. LLM Extraction with Filtering
+**3. LLM Extraction with Filtering:**
 
-    ```bash
-    crwl https://example.com \
-        -B browser.yml \
-        -e extract_llm.yml \
-        -s llm_schema.json \
-        -f filter_bm25.yml \
-        -o json
-    ```
+```bash
+crwl https://example.com \
+    -B browser.yml \
+    -e extract_llm.yml \
+    -s llm_schema.json \
+    -f filter_bm25.yml \
+    -o json
+```
 
-4. Interactive Q&A
+**4. Interactive Q&A:**
 
-    ```bash
-    # First crawl and view
-    crwl https://example.com -o markdown
+```bash
+# First crawl and view
+crwl https://example.com -o markdown
 
-    # Then ask questions
-    crwl https://example.com -q "What are the main points?"
-    crwl https://example.com -q "Summarize the conclusions"
-    ```
+# Then ask questions
+crwl https://example.com -q "What are the main points?"
+crwl https://example.com -q "Summarize the conclusions"
+```
 
 ---
 
 ## Best Practices & Tips
-<!-- Lines 281-310 -->
 
-1. Configuration Management:
-   - Keep common configurations in YAML files
-   - Use CLI parameters for quick overrides
-   - Store sensitive data (API tokens) in `~/.crawl4ai/global.yml`
+1. **Configuration Management:**
 
-2. Performance Optimization:
-   - Use `--bypass-cache` for fresh content
-   - Enable `scan_full_page` for infinite scroll pages
-   - Adjust `delay_before_return_html` for dynamic content
+- Keep common configurations in YAML files
+- Use CLI parameters for quick overrides
+- Store sensitive data (API tokens) in `~/.crawl4ai/global.yml`
 
-3. Content Extraction:
-   - Use CSS extraction for structured content (faster, no API costs)
-   - Use LLM extraction for unstructured content
-   - Combine with filters for focused results
+1. **Performance Optimization:**
 
-4. Q&A Workflow:
-   - View content first with `-o markdown`
-   - Ask specific questions
-   - Use broader context with appropriate selectors
+- Use `--bypass-cache` for fresh content
+- Enable `scan_full_page` for infinite scroll pages
+- Adjust `delay_before_return_html` for dynamic content
+
+1. **Content Extraction:**
+
+- Use CSS extraction for structured content (faster, no API costs)
+- Use LLM extraction for unstructured content
+- Combine with filters for focused results
+
+1. **Q&A Workflow:**
+
+- View content first with `-o markdown`
+- Ask specific questions
+- Use broader context with appropriate selectors
 
 ---
 

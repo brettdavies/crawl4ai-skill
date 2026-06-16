@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: MIT OR Apache-2.0
+# CrawlerRunConfig template. Copy, fill, pass via `crwl <url> -C crawler.yml`.
+# Field reference: see
+# `references/complete-sdk-reference.md#2-crawlerrunconfig--controlling-each-crawl`.
+
+cache_mode: "bypass"          # "bypass" | "enabled" | "disabled"
+wait_until: "networkidle"     # "networkidle" | "domcontentloaded" | "load"
+page_timeout: 30000           # ms; 60000+ for JS-heavy sites
+delay_before_return_html: 0.5 # post-load settle time (seconds)
+word_count_threshold: 100     # minimum block length to keep
+scan_full_page: true          # handle infinite scroll
+scroll_delay: 0.3
+process_iframes: false
+remove_overlay_elements: true # cookie banners, modals
+verbose: false
+
+# wait_for: "css:.dynamic-content"    # CSS selector to wait for
+# wait_for: "js:document.querySelector('.x') !== null"  # JS predicate
+# css_selector: "#main"               # focus on a sub-tree
+# excluded_tags: ["nav", "footer"]    # drop these tags from cleaned HTML
+
+# session_id: "user_session"          # persist across crawls
+# js_code: |                          # post-load JS to execute
+#   window.scrollTo(0, document.body.scrollHeight);
+
+# screenshot: true
+# pdf: true

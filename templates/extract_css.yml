@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: MIT OR Apache-2.0
+# JsonCssExtractionStrategy template. Copy, fill, pass via
+# `crwl <url> -e extract_css.yml -s css_schema.json -o json`.
+# Field reference: `references/complete-sdk-reference.md#extraction-strategies`.
+
+type: "json-css"
+params:
+  verbose: false

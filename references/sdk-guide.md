@@ -1,8 +1,9 @@
 # Crawl4AI Python SDK Guide
-<!-- Reference: Tier 2 - Python SDK interface for Crawl4AI -->
+
+Programmatic Python interface for the Crawl4AI library. Pairs with [CLI Guide](cli-guide.md) for command-line use and
+the deeper [Complete SDK Reference](complete-sdk-reference.md).
 
 ## Quick Start
-<!-- Lines 1-60 -->
 
 ### Installation
 
@@ -51,12 +52,11 @@ async with AsyncWebCrawler(config=browser_config) as crawler:
     print(f"Markdown length: {len(result.markdown)}")
 ```
 
-For complete API reference: [AsyncWebCrawler](complete-sdk-reference.md#asyncwebcrawler) (lines 517-778)
+For complete API reference: [AsyncWebCrawler](complete-sdk-reference.md#asyncwebcrawler).
 
 ---
 
 ## Configuration
-<!-- Lines 61-150 -->
 
 ### BrowserConfig
 
@@ -81,16 +81,16 @@ browser_config = BrowserConfig(
 
 **Key Parameters:**
 
-| Parameter | Description |
-|-----------|-------------|
-| `headless` | Run with/without GUI |
-| `viewport_width/height` | Browser dimensions |
-| `user_agent` | Custom user agent string |
-| `cookies` | Pre-set cookies |
-| `headers` | Custom HTTP headers |
-| `proxy_config` | Proxy server settings |
+| Parameter               | Description              |
+| ----------------------- | ------------------------ |
+| `headless`              | Run with/without GUI     |
+| `viewport_width/height` | Browser dimensions       |
+| `user_agent`            | Custom user agent string |
+| `cookies`               | Pre-set cookies          |
+| `headers`               | Custom HTTP headers      |
+| `proxy_config`          | Proxy server settings    |
 
-For all parameters: [BrowserConfig Reference](complete-sdk-reference.md#1-browserconfig--controlling-the-browser) (lines 1977-2020)
+For all parameters: [BrowserConfig Reference](complete-sdk-reference.md#1-browserconfig--controlling-the-browser).
 
 ### CrawlerRunConfig
 
@@ -123,21 +123,20 @@ config = CrawlerRunConfig(
 
 **Key Parameters:**
 
-| Parameter | Description |
-|-----------|-------------|
-| `page_timeout` | Max page load/JS time (ms) |
-| `wait_for` | CSS selector or JS condition |
-| `cache_mode` | ENABLED, BYPASS, DISABLED |
-| `js_code` | JavaScript to execute |
-| `session_id` | Persist session across crawls |
-| `screenshot` | Capture screenshot |
+| Parameter      | Description                   |
+| -------------- | ----------------------------- |
+| `page_timeout` | Max page load/JS time (ms)    |
+| `wait_for`     | CSS selector or JS condition  |
+| `cache_mode`   | ENABLED, BYPASS, DISABLED     |
+| `js_code`      | JavaScript to execute         |
+| `session_id`   | Persist session across crawls |
+| `screenshot`   | Capture screenshot            |
 
-For all parameters: [CrawlerRunConfig Reference](complete-sdk-reference.md#2-crawlerrunconfig--controlling-each-crawl) (lines 2020-2330)
+For all parameters: [CrawlerRunConfig Reference](complete-sdk-reference.md#2-crawlerrunconfig--controlling-each-crawl).
 
 ---
 
 ## CrawlResult
-<!-- Lines 151-200 -->
 
 Every `arun()` call returns a `CrawlResult`:
 
@@ -168,12 +167,11 @@ result.pdf              # PDF bytes (if requested)
 result.metadata         # Page metadata (title, description)
 ```
 
-For complete fields: [CrawlResult Reference](complete-sdk-reference.md#crawlresult-reference) (lines 1224-1612)
+For complete fields: [CrawlResult Reference](complete-sdk-reference.md#crawlresult-reference).
 
 ---
 
 ## Content Processing
-<!-- Lines 201-280 -->
 
 ### Markdown Generation
 
@@ -219,12 +217,11 @@ print(result.markdown.fit_markdown)  # Filtered content
 print(result.markdown.raw_markdown)  # Original content
 ```
 
-For filters and generators: [Content Processing](complete-sdk-reference.md#content-processing) (lines 2481-3101)
+For filters and generators: [Content Processing](complete-sdk-reference.md#content-processing).
 
 ---
 
 ## Data Extraction
-<!-- Lines 281-360 -->
 
 ### CSS-Based Extraction (No LLM)
 
@@ -275,12 +272,11 @@ extraction_strategy = LLMExtractionStrategy(
 config = CrawlerRunConfig(extraction_strategy=extraction_strategy)
 ```
 
-For extraction strategies: [Extraction Strategies](complete-sdk-reference.md#extraction-strategies) (lines 4522-5429)
+For extraction strategies: [Extraction Strategies](complete-sdk-reference.md#extraction-strategies).
 
 ---
 
 ## Multi-URL Crawling
-<!-- Lines 361-420 -->
 
 ### Concurrent Processing with arun_many()
 
@@ -327,12 +323,11 @@ results = await crawler.arun_many(
 )
 ```
 
-For dispatchers and advanced: [arun_many() Reference](complete-sdk-reference.md#arunmany-reference) (lines 1057-1224)
+For dispatchers and advanced: [arun_many() Reference](complete-sdk-reference.md#arunmany-reference).
 
 ---
 
 ## Session Management
-<!-- Lines 421-480 -->
 
 ### Persistent Sessions
 
@@ -371,7 +366,8 @@ config = CrawlerRunConfig(
 )
 ```
 
-For session patterns: [Advanced Features - Session Management](complete-sdk-reference.md#advanced-features) (lines 5429-5940)
+For session patterns: [Advanced Features - Session Management](complete-sdk-reference.md#advanced-features) (lines
+5429-5940)
 
 ---
 

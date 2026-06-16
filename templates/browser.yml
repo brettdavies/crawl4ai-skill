@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: MIT OR Apache-2.0
+# BrowserConfig template. Copy, fill, pass via `crwl <url> -B browser.yml`.
+# Field reference: see `references/anti-detection.md` for the stealth-related fields
+# and `references/complete-sdk-reference.md#1-browserconfig--controlling-the-browser`
+# for the full list.
+
+headless: true              # false to see the browser (useful for debugging)
+viewport_width: 1920
+viewport_height: 1080
+user_agent_mode: "random"   # "random" rotates; otherwise omit and set user_agent
+# user_agent: "Mozilla/5.0 (...)"  # explicit override
+ignore_https_errors: true
+verbose: false
+
+# proxy_config:               # uncomment for proxied fetches
+#   server: "http://proxy.example.com:8080"
+#   username: "user"
+#   password: "pass"
+
+# init_scripts:               # pre-page-load JS (runs before any site script)
+#   - "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"

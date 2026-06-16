@@ -1,18 +1,54 @@
 ---
 name: crawl4ai
-description: This skill should be used when users need to scrape websites, extract structured data, handle JavaScript-heavy pages, crawl multiple URLs, or build automated web data pipelines. Includes optimized extraction patterns with schema generation for efficient, LLM-free extraction.
+description: Use when scraping JavaScript-heavy pages or SPAs, crawling multiple URLs concurrently, extracting structured data with reusable CSS/JSON schemas, or building automated web data pipelines. Wraps the Crawl4AI library (`crwl` CLI and Python SDK) with schema-generation patterns for LLM-free extraction. Triggers on crawl4ai, crwl, scrape JS-heavy site, scrape SPA, headless browser scrape, schema-based extraction, batch crawl, sitemap crawl, web data pipeline. SKIP when a static HTML page can be read with `defuddle` / `fetch-web` — those are faster cold-start and don't need a browser.
+argument-hint: "[url]"
 ---
 
 # Crawl4AI
 
+**Verified against `crawl4ai`** [`VERSION`](VERSION). PEP 723 pins in `scripts/*.py` and `tests/*.py` floor at that
+version.
+
 ## Overview
 
-Crawl4AI provides comprehensive web crawling and data extraction capabilities. This skill supports both **CLI** (recommended for quick tasks) and **Python SDK** (for programmatic control).
+Crawl4AI wraps a headless browser (Playwright) plus a markdown-aware content pipeline. Use it when defuddle/curl can't
+reach the content — JavaScript-rendered pages, login-gated content, infinite scroll, multi-URL concurrency, repeatable
+schema-based extraction.
 
-**Choose your interface:**
+This skill exposes both interfaces of the underlying library:
 
-- **CLI** (`crwl`) - Quick, scriptable commands: [CLI Guide](references/cli-guide.md)
-- **Python SDK** - Full programmatic control: [SDK Guide](references/sdk-guide.md)
+- **CLI** (`crwl`) — quick, scriptable commands: [CLI Guide](references/cli-guide.md)
+- **Python SDK** — full programmatic control: [SDK Guide](references/sdk-guide.md)
+
+## Invoked with a URL argument
+
+When the user runs `/crawl4ai <url>` with a single URL and no further qualifier, treat it as the JS-heavy fetch case and
+default to:
+
+```bash
+crwl <url> -c "wait_for=css:body,page_timeout=60000" -o markdown
+```
+
+Then return the markdown to the agent context. Adjust `wait_for` if the user named a specific element. Skip the default
+and route to the relevant section below for any task that names extraction, batch / multi-URL, login / session,
+screenshot / PDF, or URL discovery — those each have their own pipeline. If the URL is clearly static (a docs page, a
+blog post), route the user to `/fetch-web` instead per the "When NOT to use" section below.
+
+## When NOT to use this skill
+
+- **Static HTML pages** (most documentation sites, blog posts, news articles, tweets) — use `/fetch-web` or `defuddle`
+  directly. Static extraction is ~0ms cold start; crawl4ai pays a ~2s browser startup tax.
+- **Local file conversion** (`.pdf`, `.docx`, `.pptx`, `.epub`) — use `/markdown-convert`.
+- **One-URL agent-context reads** (the agent just needs to read this page) — use `/fetch-web` and let it route to
+  `defuddle`.
+- **Mutating UI flows** (form fills, multi-step clicks, login + navigation) — `/browse` (gstack's persistent headless
+  Chromium) is built for that.
+
+## When stuck
+
+For unknown crwl/SDK flags, scrape failures, or extraction edge cases the references don't cover, see
+[references/escalation.md](references/escalation.md) for the lookup order (qmd solutions → upstream docs → GitHub issues
+→ ask the user) and worked examples.
 
 ---
 
@@ -58,7 +94,7 @@ async def main():
 asyncio.run(main())
 ```
 
-For SDK configuration details: [SDK Guide - Configuration](references/sdk-guide.md#configuration) (lines 61-150)
+For SDK configuration details: [SDK Guide - Configuration](references/sdk-guide.md#configuration).
 
 ---
 
@@ -68,12 +104,12 @@ For SDK configuration details: [SDK Guide - Configuration](references/sdk-guide.
 
 Both CLI and SDK use the same underlying configuration:
 
-| Concept | CLI | SDK |
-|---------|-----|-----|
-| Browser settings | `-B browser.yml` or `-b "param=value"` | `BrowserConfig(...)` |
-| Crawl settings | `-C crawler.yml` or `-c "param=value"` | `CrawlerRunConfig(...)` |
-| Extraction | `-e extract.yml -s schema.json` | `extraction_strategy=...` |
-| Content filter | `-f filter.yml` | `markdown_generator=...` |
+| Concept          | CLI                                    | SDK                       |
+| ---------------- | -------------------------------------- | ------------------------- |
+| Browser settings | `-B browser.yml` or `-b "param=value"` | `BrowserConfig(...)`      |
+| Crawl settings   | `-C crawler.yml` or `-c "param=value"` | `CrawlerRunConfig(...)`   |
+| Extraction       | `-e extract.yml -s schema.json`        | `extraction_strategy=...` |
+| Content filter   | `-f filter.yml`                        | `markdown_generator=...`  |
 
 ### Key Parameters
 
@@ -92,7 +128,8 @@ Both CLI and SDK use the same underlying configuration:
 - `js_code`: JavaScript to execute
 - `css_selector`: Focus on specific element
 
-For complete parameters: [CLI Config](references/cli-guide.md#configuration) | [SDK Config](references/sdk-guide.md#configuration)
+For complete parameters: [CLI Config](references/cli-guide.md#configuration) |
+[SDK Config](references/sdk-guide.md#configuration)
 
 ### Output Content
 
@@ -108,29 +145,19 @@ Every crawl returns:
 
 ## Markdown Generation (Primary Use Case)
 
-Crawl4AI excels at generating clean, well-formatted markdown:
+Crawl4AI excels at generating clean, well-formatted markdown.
 
 ### CLI
 
 ```bash
-# Basic markdown
-crwl https://docs.example.com -o markdown
-
-# Filtered markdown (removes noise)
-crwl https://docs.example.com -o markdown-fit
-
-# With content filter
-crwl https://docs.example.com -f filter_bm25.yml -o markdown-fit
+crwl https://docs.example.com -o markdown                              # raw markdown
+crwl https://docs.example.com -o markdown-fit                          # filtered (noise removed)
+crwl https://docs.example.com -f templates/filter_bm25.yml -o markdown-fit   # BM25-relevance filter
+crwl https://docs.example.com -f templates/filter_pruning.yml -o markdown-fit # quality-based filter
 ```
 
-**Filter configuration:**
-
-```yaml
-# filter_bm25.yml (relevance-based)
-type: "bm25"
-query: "machine learning tutorials"
-threshold: 1.0
-```
+Filter templates: [`templates/filter_bm25.yml`](templates/filter_bm25.yml) (relevance-scored against a query),
+[`templates/filter_pruning.yml`](templates/filter_pruning.yml) (no query, prunes low-quality blocks).
 
 ### Python SDK
 
@@ -148,7 +175,7 @@ print(result.markdown.fit_markdown)  # Filtered
 print(result.markdown.raw_markdown)  # Original
 ```
 
-For content filters: [Content Processing](references/complete-sdk-reference.md#content-processing) (lines 2481-3101)
+For filter selection and config field reference, see [Content Filters](references/content-filters.md).
 
 ---
 
@@ -156,51 +183,41 @@ For content filters: [Content Processing](references/complete-sdk-reference.md#c
 
 ### 1. Schema-Based CSS Extraction (Most Efficient)
 
-**No LLM required** - fast, deterministic, cost-free.
-
-**CLI:**
+**No LLM required** at extract time — fast, deterministic, cost-free. One-time LLM cost to derive the schema, then reuse
+indefinitely. The bundled scripts split the pipeline by responsibility:
 
 ```bash
-# Generate schema once (uses LLM)
-python scripts/extraction_pipeline.py --generate-schema https://shop.com "extract products"
-
-# Use schema for extraction (no LLM)
-crwl https://shop.com -e extract_css.yml -s product_schema.json -o json
+./scripts/generate_schema.py https://shop.example.com "products with name, price, image" shop_schema.json
+./scripts/extract_with_schema.py https://shop.example.com shop_schema.json products.json
 ```
 
-**Schema format:**
+Or via the CLI with the YAML strategy template + the saved schema:
 
-```json
-{
-  "name": "products",
-  "baseSelector": ".product-card",
-  "fields": [
-    {"name": "title", "selector": "h2", "type": "text"},
-    {"name": "price", "selector": ".price", "type": "text"},
-    {"name": "link", "selector": "a", "type": "attribute", "attribute": "href"}
-  ]
-}
+```bash
+crwl https://shop.example.com -e templates/extract_css.yml -s shop_schema.json -o json
 ```
+
+Schema skeleton: [`templates/css_schema.json`](templates/css_schema.json). Strategy YAML:
+[`templates/extract_css.yml`](templates/extract_css.yml).
 
 ### 2. LLM-Based Extraction
 
-For complex or irregular content:
-
-**CLI:**
-
-```yaml
-# extract_llm.yml
-type: "llm"
-provider: "openai/gpt-4o-mini"
-instruction: "Extract product names and prices"
-api_token: "your-token"
-```
+For one-off / irregular content where a CSS schema is too brittle:
 
 ```bash
-crwl https://shop.com -e extract_llm.yml -o json
+./scripts/extract_with_llm.py https://news.example.com "Extract headlines, dates, summaries" news.json
 ```
 
-For extraction details: [Extraction Strategies](references/complete-sdk-reference.md#extraction-strategies) (lines 4522-5429)
+Or via the CLI with the strategy template:
+
+```bash
+crwl https://news.example.com -e templates/extract_llm.yml -o json
+```
+
+Strategy YAML: [`templates/extract_llm.yml`](templates/extract_llm.yml). Pays an LLM call per URL — for repeat
+extraction, prefer the schema pipeline above.
+
+For extraction strategy reference: [Extraction Strategies](references/complete-sdk-reference.md#extraction-strategies).
 
 ---
 
@@ -208,120 +225,101 @@ For extraction details: [Extraction Strategies](references/complete-sdk-referenc
 
 ### Dynamic Content (JavaScript-Heavy Sites)
 
-**CLI:**
-
 ```bash
 crwl https://example.com -c "wait_for=css:.ajax-content,scan_full_page=true,page_timeout=60000"
+crwl https://example.com -C templates/crawler.yml                          # all options in a YAML file
 ```
 
-**Crawler config:**
-
-```yaml
-# crawler.yml
-wait_for: "css:.ajax-content"
-scan_full_page: true
-page_timeout: 60000
-delay_before_return_html: 2.0
-```
+Crawler config template: [`templates/crawler.yml`](templates/crawler.yml).
 
 ### Multi-URL Processing
 
-**CLI (sequential):**
-
 ```bash
-for url in url1 url2 url3; do crwl "$url" -o markdown; done
+./scripts/batch_crawl.py urls.txt --max-concurrent 5 --out batch_markdown/
+./scripts/batch_extract.py urls.txt shop_schema.json --max-concurrent 5 --out products.json
 ```
 
-**Python SDK (concurrent):**
+The two scripts split on responsibility: `batch_crawl.py` returns markdown per URL; `batch_extract.py` returns
+schema-extracted JSON per URL. Python equivalent uses `arun_many()`:
 
 ```python
 urls = ["https://site1.com", "https://site2.com", "https://site3.com"]
 results = await crawler.arun_many(urls, config=config)
 ```
 
-For batch processing: [arun_many() Reference](references/complete-sdk-reference.md#arunmany-reference) (lines 1057-1224)
+For batch processing reference: [arun_many() Reference](references/complete-sdk-reference.md#arunmany-reference).
+
+### URL Discovery Before Crawl
+
+When the URL list comes from a sitemap / domain rather than a known list, do discovery first, then feed the result into
+`batch_crawl.py` / `batch_extract.py`. See [URL Discovery](references/url-discovery.md) for the full surface; quick
+shape:
+
+```python
+from crawl4ai import AsyncUrlSeeder, SeedingConfig
+seeds = await AsyncUrlSeeder().urls("example.com", SeedingConfig(
+    source="sitemap+cc", pattern="*/blog/*", query="machine learning", score_threshold=0.3, live_check=True,
+))
+urls = [s["url"] for s in seeds]
+```
+
+`AsyncUrlSeeder` is best when you want BM25-scored filtering against a query; `DomainMapper` is best when you want
+maximum coverage of one domain.
 
 ### Session & Authentication
 
-**CLI:**
-
-```yaml
-# login_crawler.yml
-session_id: "user_session"
-js_code: |
-  document.querySelector('#username').value = 'user';
-  document.querySelector('#password').value = 'pass';
-  document.querySelector('#submit').click();
-wait_for: "css:.dashboard"
-```
+Fill the login template, then reuse the session id on subsequent crawls:
 
 ```bash
-# Login
-crwl https://site.com/login -C login_crawler.yml
-
-# Access protected content (session reused)
+crwl https://site.com/login -C templates/login_crawler.yml
 crwl https://site.com/protected -c "session_id=user_session"
 ```
 
-For session management: [Advanced Features](references/complete-sdk-reference.md#advanced-features) (lines 5429-5940)
+Login template: [`templates/login_crawler.yml`](templates/login_crawler.yml) (fill in the field-id selectors and the
+post-login wait condition before use).
+
+For session management reference: [Advanced Features](references/complete-sdk-reference.md#advanced-features).
 
 ### Anti-Detection & Proxies
 
-**CLI:**
-
-```yaml
-# browser.yml
-headless: true
-proxy_config:
-  server: "http://proxy:8080"
-  username: "user"
-  password: "pass"
-user_agent_mode: "random"
+```bash
+crwl https://example.com -B templates/browser.yml
 ```
 
-```bash
-crwl https://example.com -B browser.yml
+Browser config template: [`templates/browser.yml`](templates/browser.yml) (uncomment `proxy_config` and `init_scripts`
+as needed). For pre-page-load script injection (fingerprint patches that must fire **before** any site script), populate
+`init_scripts:` rather than `js_code:` (which fires after the page loads). `proxy_config` works with both the browser
+strategy and the non-browser `HTTPCrawlerStrategy` — the latter is the cheap path for static fetches behind a corporate
+proxy.
+
+Full surface (CDP attachment, undetected mode, init script patterns): [Anti-Detection](references/anti-detection.md).
+
+### Rendering Cached HTML (`raw:` / `file://`)
+
+If the agent already has HTML in hand (e.g., from `defuddle` or a previous crawl) and only needs a screenshot, PDF, or
+MHTML render, skip the network fetch and pass the HTML directly. `base_url` controls relative-link resolution:
+
+```python
+result = await crawler.arun(
+    url="raw:" + html_string,
+    config=CrawlerRunConfig(base_url="https://example.com", screenshot=True, pdf=True),
+)
+```
+
+```python
+result = await crawler.arun(
+    url="file:///path/to/page.html",
+    config=CrawlerRunConfig(screenshot=True),
+)
 ```
 
 ---
 
 ## Common Use Cases
 
-### Documentation to Markdown
-
-```bash
-crwl https://docs.example.com -o markdown > docs.md
-```
-
-### E-commerce Product Monitoring
-
-```bash
-# Generate schema once
-python scripts/extraction_pipeline.py --generate-schema https://shop.com "extract products"
-
-# Monitor (no LLM costs)
-crwl https://shop.com -e extract_css.yml -s schema.json -o json
-```
-
-### News Aggregation
-
-```bash
-# Multiple sources with filtering
-for url in news1.com news2.com news3.com; do
-  crwl "https://$url" -f filter_bm25.yml -o markdown-fit
-done
-```
-
-### Interactive Q&A
-
-```bash
-# First view content
-crwl https://example.com -o markdown
-
-# Then ask questions
-crwl https://example.com -q "What are the main conclusions?"
-crwl https://example.com -q "Summarize the key points"
-```
+Eight worked end-to-end flows (docs page, JS-heavy SPA, e-commerce product extraction, news aggregation, topic-bound
+domain crawl, login-required content, render existing HTML, Q&A) live in [Recipes](references/recipes.md). Pick the
+recipe closest to the task at hand and adapt.
 
 ---
 
@@ -329,17 +327,43 @@ crwl https://example.com -q "Summarize the key points"
 
 ### Provided Scripts
 
-- **scripts/extraction_pipeline.py** - Schema generation and extraction
-- **scripts/basic_crawler.py** - Simple markdown extraction
-- **scripts/batch_crawler.py** - Multi-URL processing
+| Script                                               | Responsibility                                       |
+| ---------------------------------------------------- | ---------------------------------------------------- |
+| `scripts/basic_crawler.py <url>`                     | One URL → markdown + screenshot                      |
+| `scripts/batch_crawl.py <urls.txt>`                  | Many URLs → markdown files                           |
+| `scripts/batch_extract.py <urls.txt> <schema.json>`  | Many URLs + schema → JSON                            |
+| `scripts/generate_schema.py <url> "<instruction>"`   | Derive a reusable CSS schema (one-time LLM call)     |
+| `scripts/extract_with_schema.py <url> <schema.json>` | Apply a saved schema (no LLM)                        |
+| `scripts/extract_with_llm.py <url> "<instruction>"`  | Per-request LLM extraction (expensive; one-off only) |
+
+### Templates
+
+YAML and JSON skeletons users copy and fill. All sit at the skill root under `templates/`:
+
+| Template                       | Used for                                                    |
+| ------------------------------ | ----------------------------------------------------------- |
+| `templates/browser.yml`        | `BrowserConfig` (headless, proxy, user agent, init scripts) |
+| `templates/crawler.yml`        | `CrawlerRunConfig` (cache, wait, timeout, JS)               |
+| `templates/extract_css.yml`    | `JsonCssExtractionStrategy` declaration                     |
+| `templates/extract_llm.yml`    | `LLMExtractionStrategy` declaration                         |
+| `templates/filter_bm25.yml`    | BM25 content filter (relevance-scored)                      |
+| `templates/filter_pruning.yml` | Pruning content filter (quality-based, no query)            |
+| `templates/login_crawler.yml`  | Session-establishing login flow                             |
+| `templates/css_schema.json`    | CSS schema skeleton                                         |
 
 ### Reference Documentation
 
-| Document | Purpose |
-|----------|---------|
-| [CLI Guide](references/cli-guide.md) | Command-line interface reference |
-| [SDK Guide](references/sdk-guide.md) | Python SDK quick reference |
-| [Complete SDK Reference](references/complete-sdk-reference.md) | Full API documentation (5900+ lines) |
+| Document                                                       | Purpose                                                         |
+| -------------------------------------------------------------- | --------------------------------------------------------------- |
+| [CLI Guide](references/cli-guide.md)                           | Command-line interface reference                                |
+| [SDK Guide](references/sdk-guide.md)                           | Python SDK quick reference                                      |
+| [Recipes](references/recipes.md)                               | Eight worked end-to-end flows                                   |
+| [URL Discovery](references/url-discovery.md)                   | `AsyncUrlSeeder`, `SeedingConfig`, `DomainMapper`               |
+| [Content Filters](references/content-filters.md)               | BM25 vs Pruning vs LLMContentFilter — when to use which         |
+| [Anti-Detection](references/anti-detection.md)                 | `init_scripts`, `proxy_config`, undetected mode, CDP attachment |
+| [Troubleshooting](references/troubleshooting.md)               | Symptoms, causes, fixes; what to try before escalating          |
+| [Complete SDK Reference](references/complete-sdk-reference.md) | Full API documentation (5900+ lines)                            |
+| [Escalation](references/escalation.md)                         | Lookup order, iron rule, halt-vs-continue, worked examples      |
 
 ---
 
@@ -356,43 +380,15 @@ crwl https://example.com -q "Summarize the key points"
 
 ## Troubleshooting
 
-### JavaScript Not Loading
-
-```bash
-crwl https://example.com -c "wait_for=css:.dynamic-content,page_timeout=60000"
-```
-
-### Bot Detection Issues
-
-```bash
-crwl https://example.com -B browser.yml
-```
-
-```yaml
-# browser.yml
-headless: false
-viewport_width: 1920
-viewport_height: 1080
-user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-```
-
-### Content Not Extracted
-
-```bash
-# Debug: see full output
-crwl https://example.com -o all -v
-
-# Try different wait strategy
-crwl https://example.com -c "wait_for=js:document.querySelector('.content')!==null"
-```
-
-### Session Issues
-
-```bash
-# Verify session
-crwl https://site.com -c "session_id=test" -o all | grep -i session
-```
+For symptom → cause → fix tables (JS not loading, bot detection, empty extracted content, session not persisting, slow
+crawl, schema generation nonsense, post-upgrade regressions), see [Troubleshooting](references/troubleshooting.md). For
+unknown surface the references don't cover, follow [Escalation](references/escalation.md).
 
 ---
 
 For comprehensive API documentation, see [Complete SDK Reference](references/complete-sdk-reference.md).
+
+## License
+
+Dual-licensed under [MIT](LICENSE-MIT) OR [Apache-2.0](LICENSE-APACHE) at your option (SPDX: `MIT OR Apache-2.0`). See
+[LICENSE](LICENSE) for the explainer + the carve-out for the upstream-mirrored `references/complete-sdk-reference.md`.

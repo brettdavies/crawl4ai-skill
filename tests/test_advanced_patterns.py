@@ -1,4 +1,9 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S PYTHONDONTWRITEBYTECODE=1 uv run --script
+# /// script
+# requires-python = ">=3.10"
+# dependencies = ["crawl4ai>=0.8.9"]
+# ///
+# SPDX-License-Identifier: MIT OR Apache-2.0
 """
 Test advanced patterns from SKILL.md
 """

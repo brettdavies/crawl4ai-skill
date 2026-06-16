@@ -1,21 +1,16 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S PYTHONDONTWRITEBYTECODE=1 uv run --script
+# /// script
+# requires-python = ">=3.10"
+# dependencies = ["crawl4ai>=0.8.9"]
+# ///
+# SPDX-License-Identifier: MIT OR Apache-2.0
 """
 Basic Crawl4AI crawler template
-Usage: python basic_crawler.py <url>
+Usage: ./basic_crawler.py <url>
 """
 
 import asyncio
 import sys
-
-# Version check
-MIN_CRAWL4AI_VERSION = "0.7.4"
-try:
-    from crawl4ai.__version__ import __version__
-    from packaging import version
-    if version.parse(__version__) < version.parse(MIN_CRAWL4AI_VERSION):
-        print(f"⚠️  Warning: Crawl4AI {MIN_CRAWL4AI_VERSION}+ recommended (you have {__version__})")
-except ImportError:
-    print(f"ℹ️  Crawl4AI {MIN_CRAWL4AI_VERSION}+ required")
 
 from crawl4ai import AsyncWebCrawler, BrowserConfig, CrawlerRunConfig, CacheMode
 
@@ -50,14 +45,11 @@ async def crawl_basic(url: str):
             print(f"   Media found: {len(result.media.get('images', []))} images, {len(result.media.get('videos', []))} videos")
             print(f"   Content length: {len(result.markdown)} chars")
 
-            # Save markdown
             with open("output.md", "w") as f:
                 f.write(result.markdown)
             print("📄 Saved to output.md")
 
-            # Save screenshot if available
             if result.screenshot:
-                # Check if screenshot is base64 string or bytes
                 if isinstance(result.screenshot, str):
                     import base64
                     screenshot_data = base64.b64decode(result.screenshot)
@@ -73,7 +65,7 @@ async def crawl_basic(url: str):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python basic_crawler.py <url>")
+        print("Usage: ./basic_crawler.py <url>")
         sys.exit(1)
 
     url = sys.argv[1]

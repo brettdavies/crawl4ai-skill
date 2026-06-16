@@ -1,4 +1,9 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S PYTHONDONTWRITEBYTECODE=1 uv run --script
+# /// script
+# requires-python = ">=3.10"
+# dependencies = []
+# ///
+# SPDX-License-Identifier: MIT OR Apache-2.0
 """
 Run all skill tests
 """
@@ -13,7 +18,7 @@ def run_test(test_file):
     print('='*60)
 
     result = subprocess.run(
-        [sys.executable, test_file],
+        [str(test_file)],
         capture_output=False
     )
 
@@ -25,7 +30,8 @@ def main():
         "test_basic_crawling.py",
         "test_markdown_generation.py",
         "test_data_extraction.py",
-        "test_advanced_patterns.py"
+        "test_advanced_patterns.py",
+        "test_fixtures.py",
     ]
 
     results = {}

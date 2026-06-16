@@ -1,2 +1,14 @@
 **/.DS_Store
 /.cursor
+
+# Script outputs written to cwd by scripts/ templates.
+# Ignored regardless of which subdir the scripts are invoked from.
+output.md
+screenshot.png
+batch_results.json
+batch_extracted.json
+batch_markdown/
+generated_schema.json
+extracted_data.json
+manual_extracted.json
+llm_extracted.json

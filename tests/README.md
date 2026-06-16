@@ -1,48 +1,47 @@
 # Crawl4AI Skill Tests
 
-This directory contains test scripts that verify the accuracy of all code examples in the SKILL.md file.
+Integration smoke tests that verify the skill's documented patterns still work against the installed `crawl4ai` library.
+The patterns are surfaced in SKILL.md, with the deep reference in `references/` (cli-guide, sdk-guide, url-discovery,
+content-filters, anti-detection, complete-sdk-reference). The tests cross-check the documented API surface, not the
+prose of any particular reference file.
 
-## Test Files
+## Test files
 
-1. **test_basic_crawling.py** - Tests basic crawling setup with BrowserConfig and CrawlerRunConfig
-2. **test_markdown_generation.py** - Tests markdown generation, fit_markdown, and content filters
-3. **test_data_extraction.py** - Tests JSON/CSS extraction and LLM extraction strategies
-4. **test_advanced_patterns.py** - Tests session management, proxies, and batch crawling
+| File                          | Coverage                                                                         |
+| ----------------------------- | -------------------------------------------------------------------------------- |
+| `test_basic_crawling.py`      | `BrowserConfig`, `CrawlerRunConfig`, `AsyncWebCrawler` smoke crawl               |
+| `test_markdown_generation.py` | Default markdown, `BM25ContentFilter`, `PruningContentFilter`, generator options |
+| `test_data_extraction.py`     | `JsonCssExtractionStrategy` manual schema, `LLMExtractionStrategy` constructor   |
+| `test_advanced_patterns.py`   | `session_id` reuse, `proxy_config` shape, `arun_many` batch                      |
+| `test_fixtures.py`            | Deterministic schema extraction against the bundled `fixtures/` pair             |
 
-## Running Tests
-
-### Run all tests
-
-```bash
-python run_all_tests.py
-```
-
-### Run individual tests
+## Running
 
 ```bash
-python test_basic_crawling.py
-python test_markdown_generation.py
-python test_data_extraction.py
-python test_advanced_patterns.py
+./run_all_tests.py                        # all tests, summary at end
+./test_basic_crawling.py                  # any single test in isolation
+./test_fixtures.py                        # the deterministic fixture pair
 ```
+
+Every script is a self-contained PEP 723 (`uv run --script`) invocation; dependencies resolve on first run.
 
 ## Requirements
 
-- Crawl4AI 0.7.4+
-- All tests use example.com/example.org for testing
-- LLM tests verify structure only (no API key required for basic validation)
+- `crawl4ai>=0.8.9` (matches the floor pin in `VERSION` and the script shebangs).
+- The four integration tests reach `example.com` / `example.org`; network access required.
+- `test_fixtures.py` is fully offline — it uses the `raw:` URL form against the bundled HTML.
+- LLM-extraction test only verifies constructor shape; no API key needed.
 
-## Test Coverage
+## What "pass" means
 
-✅ Basic crawling configuration
-✅ Markdown generation and content filtering
-✅ Schema-based data extraction
-✅ Session management
-✅ Proxy configuration structure
-✅ Batch/concurrent crawling
+A green run confirms:
 
-## Notes
+- The documented API surface (class names, constructor kwargs, return shapes) still matches the installed library.
+- The deterministic fixture still extracts the expected three product records.
 
-- Tests verify that SKILL.md examples are accurate and working
-- All parameter names, imports, and API usage are cross-checked against actual Crawl4AI documentation
-- Tests use live websites (example.com, example.org) for real-world validation
+A red run means one of the following — investigate in this order before bumping `VERSION`:
+
+1. The installed library has drifted (e.g., a renamed field or a default behaviour change). Check the upstream
+   `CHANGELOG.md` against the version currently in `VERSION`.
+2. The fixture HTML or schema needs updating (rare; the fixture is intentionally stable).
+3. A genuine regression in `crawl4ai`. Open an upstream issue.
