@@ -1,0 +1,86 @@
+# Global markdownlint-cli2 configuration
+# Canonical version: 2026.06.09
+# Symlinked to ~/.markdownlint-cli2.yaml via stow
+#
+# Per-repo copies should preserve the `Canonical version` line above and bump it on resync;
+# a stale calver compared to this file is the signal that the per-repo copy has drifted.
+#
+# Documentation: https://github.com/DavidAnson/markdownlint-cli2
+# Rules: https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md
+
+# Configure markdownlint rules
+config:
+  # Use all default rules
+  default: true
+
+  # MD003: Heading style - use ATX style (#)
+  MD003:
+    style: "atx"
+
+  # MD004: Unordered list style - use dashes
+  MD004:
+    style: "dash"
+
+  # MD007: Unordered list indentation - 2 spaces
+  MD007:
+    indent: 2
+
+  # MD009: Trailing spaces - allow 2 spaces for line breaks
+  MD009:
+    br_spaces: 2
+
+  # MD013: Line length - 120 chars (more reasonable for code docs)
+  MD013:
+    line_length: 120
+    code_blocks: false      # Don't check code blocks
+    tables: false           # Don't check tables
+    headings: false         # Don't check headings
+
+  # MD024: Allow duplicate headings in different sections
+  MD024:
+    siblings_only: true
+
+  # MD025: Single top-level heading - allow multiple (for changelogs, etc.)
+  MD025: false
+
+  # MD033: Allow inline HTML for specific elements
+  MD033:
+    allowed_elements:
+      - "br"
+      - "img"
+      - "a"
+      - "details"
+      - "summary"
+      - "sub"
+      - "sup"
+      - "kbd"
+
+  # MD034: Bare URLs - allow (common in docs)
+  MD034: false
+
+  # MD036: Emphasis used as heading - allow (stylistic choice)
+  MD036: false
+
+  # MD041: First line should be top-level heading - disable (not always needed)
+  MD041: false
+
+  # MD046: Code block style - fenced
+  MD046:
+    style: "fenced"
+
+  # MD048: Code fence style - backticks
+  MD048:
+    style: "backtick"
+
+# Ignore patterns
+ignores:
+  - "node_modules/**"
+  - "**/node_modules/**"
+  - "vendor/**"
+  - "target/**"  # Rust build artifacts; harmless for non-Rust projects
+  - ".git/**"
+  - "*.min.md"
+  - "docs/solutions/**"  # Symlink to the shared solutions-docs repo; lint upstream, not here
+
+# Fix automatically when --fix is used
+fix: true
