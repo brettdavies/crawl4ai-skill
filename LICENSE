@@ -1,21 +1,42 @@
-MIT License
+# License
 
-Copyright (c) 2025 Brett Davies
+This skill is dual-licensed under either of:
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+- Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE) or
+  <http://www.apache.org/licenses/LICENSE-2.0>)
+- MIT License ([LICENSE-MIT](LICENSE-MIT) or <http://opensource.org/licenses/MIT>)
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+at your option. SPDX identifier: `MIT OR Apache-2.0`.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Every script (`scripts/*.py`, `tests/*.py`) and YAML template (`templates/*.yml`) carries a
+`# SPDX-License-Identifier: MIT OR Apache-2.0` line at the top so the dual choice travels with
+the file when it gets copied out of the bundle. `templates/css_schema.json` is the one
+exception — JSON has no comment syntax, so the license metadata for that file lives in this
+LICENSE file alone.
+
+## What this means in practice
+
+You can use this skill — the SKILL.md, references, templates, scripts, fixtures,
+and evals — in your own projects (commercial or open source) under whichever of
+the two licenses suits you better. You only need to comply with one, not both.
+
+Both licenses require attribution: keep the copyright notice somewhere in your
+distribution. Apache-2.0 adds an explicit patent grant; MIT is shorter. Pick the
+one your project ecosystem prefers (Apache-2.0 is conventional in Java / Go /
+larger corporate contexts; MIT is conventional in JavaScript / smaller projects).
+
+## Third-party content
+
+- `references/complete-sdk-reference.md` is a verbatim mirror of upstream
+  `unclecode/crawl4ai/docs/md_v2/complete-sdk-reference.md` (pinned to commit
+  `3a75dd3`). Provenance and refresh instructions are in the file's leading HTML
+  comment. That file inherits its upstream project's license; check the
+  Crawl4AI repository for terms before redistributing it in isolation. Every
+  other file under `crawl4ai/` is original work covered by the dual license
+  above.
+
+## Contribution
+
+Any contribution submitted for inclusion in this skill — including via pull
+request, issue, or any other means — is offered under the same dual license
+terms, without any additional terms or conditions per Apache-2.0 § 5.

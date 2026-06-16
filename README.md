@@ -142,7 +142,8 @@ This skill is available on Claude Skills marketplaces:
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+Dual-licensed under Apache License 2.0 ([LICENSE-APACHE](LICENSE-APACHE)) or MIT License ([LICENSE-MIT](LICENSE-MIT)) at
+your option. SPDX identifier: `MIT OR Apache-2.0`. See [LICENSE](LICENSE) for the full notice.
 
 ## Contributing
 
