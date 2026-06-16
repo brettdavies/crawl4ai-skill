@@ -5,6 +5,32 @@ All notable changes to this skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.1] - 2026-06-16
+
+Docs-only patch. Repositions the repo as a portable agent skill (not Claude-specific) and adds project-level contributor
+documentation.
+
+### Added
+
+- `AGENTS.md` at the repo root: project-level instructions for agents working inside the repo. YAML frontmatter (name,
+  description, repository, license, verified-against), bundle conventions (VERSION pin discipline,
+  `wait_until=networkidle` default, PEP 723 scripts, schema-generation fixture contract), repo conventions
+  (main-protected branch discipline, Conventional Commits, dual-license acceptance), testing command, quality bar, and a
+  "When NOT to edit" block.
+- `CONTRIBUTING.md` at the repo root: minimal contributor flow covering issue filing, branch naming, testing, PR
+  conventions, and scope bounding (upstream Crawl4AI library bugs route to the upstream repo, not this one).
+
+### Changed
+
+- `README.md` overhauled for portable agent-skill framing. Title becomes `Crawl4AI Agent Skill`. Lead paragraph names
+  the agent-host audience explicitly (Claude Code, Codex, Cursor, OpenCode, Cline, and other SKILL.md-format hosts).
+- Install section: single host-agnostic `git clone <repo> <host-skills-dir>/crawl4ai` path, illustrated with the Claude
+  Code path. Claude Desktop staging-dir zip flow removed.
+- Documentation section now links all nine reference guides.
+- Adds a Bundle layout table documenting `SKILL.md`, `references/`, `scripts/`, `templates/`, `evals/`, `fixtures/`,
+  `tests/`, and the `VERSION` pin.
+- Marketplace and Support sections removed.
+
 ## [2.0.0] - 2026-06-16
 
 Major release. Verified against the Crawl4AI library at version 0.8.9 (recorded in `VERSION`). The repo is now the skill
