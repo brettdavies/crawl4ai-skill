@@ -136,3 +136,10 @@ crwl https://example.com -B templates/browser.yml -o all -v
 
 A successful crawl that returned the Cloudflare verification page is a silent failure — `result.success` is `True` but
 the markdown is challenge-page boilerplate.
+
+## When stuck
+
+For an evasion that still trips a known fingerprinting surface, or a `cdp_url` / `ws_endpoint` field name that's drifted
+in your installed version, see [escalation.md](escalation.md). The iron rule applies double in this file: do **not**
+invent `init_scripts` patches or `proxy_config` field names from training data — verify against the installed library
+first.

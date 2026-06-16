@@ -28,11 +28,14 @@ Plan the approach, then execute.
 
 ## Regression-test prior fixes
 
-After evals 01-03. Verify:
+After evals 01-03. Verify each by file + section + expected substance:
 
-- **Schema pipeline** (eval-02) still documented. `worked` / `regressed` / `not-touched`.
-- **URL discovery** (eval-03) still documented. Same.
-- **JS-rendered page handling** (eval-01) still documented. Same.
+- **Schema pipeline** (eval-02). `references/recipes.md` § 3 still names the `generate_schema.py` →
+  `extract_with_schema.py` → `batch_extract.py` flow. Classify `worked` / `regressed` / `not-touched`.
+- **URL discovery** (eval-03). `references/url-discovery.md` still surfaces `AsyncUrlSeeder` + `SeedingConfig` with the
+  `query` + `score_threshold` fields. Classify same.
+- **JS-rendered page handling** (eval-01). `references/troubleshooting.md` § "JavaScript content not loading" still
+  documents `wait_for=css:<selector>` and the JS-predicate fallback. Classify same.
 
 Any `regressed` is blocking.
 
@@ -52,6 +55,11 @@ Any `regressed` is blocking.
 6. **Full-page screenshot escalation** — Did you escalate to find the full-page-screenshot field name rather than guess
    it? (0 if you guessed and were wrong, 5 if you guessed and happened to be right, 10 if you verified the field name
    via the complete reference, upstream docs, or library introspection before using it.)
+7. **Full-page dimensional proof** — Report the rendered PNG's `(width, height)` to `FINAL-REPORT.md` § "Dimensions"
+   (one-line PIL or `identify` invocation is fine). A viewport-only screenshot is height = `viewport_height` (default
+   1080); a full-page screenshot is materially taller. Score 0 if `screenshot.png` is missing or you reported only "the
+   call succeeded" without dimensions; 5 if the call succeeded but height ≤ viewport_height (you got the viewport, not
+   the full page); 10 if height >> viewport_height AND you reported the numbers.
 
 ## Forced escalation
 

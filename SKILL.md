@@ -26,13 +26,16 @@ When the user runs `/crawl4ai <url>` with a single URL and no further qualifier,
 default to:
 
 ```bash
-crwl <url> -c "wait_for=css:body,page_timeout=60000" -o markdown
+crwl <url> -c "wait_until=networkidle,page_timeout=60000" -o markdown
 ```
 
-Then return the markdown to the agent context. Adjust `wait_for` if the user named a specific element. Skip the default
-and route to the relevant section below for any task that names extraction, batch / multi-URL, login / session,
-screenshot / PDF, or URL discovery — those each have their own pipeline. If the URL is clearly static (a docs page, a
-blog post), route the user to `/fetch-web` instead per the "When NOT to use" section below.
+`wait_until=networkidle` waits for the network to be quiet for ~500ms post-load — the right default when the user hasn't
+named a specific element on a JS-rendered page. (Avoid `wait_for=css:body`: `<body>` exists at t=0 on every HTML
+response, so it's satisfied before JS renders content.) Then return the markdown to the agent context. Adjust to
+`wait_for=css:<selector>` if the user named a specific element. Skip the default and route to the relevant section below
+for any task that names extraction, batch / multi-URL, login / session, screenshot / PDF, or URL discovery — those each
+have their own pipeline. If the URL is clearly static (a docs page, a blog post), route the user to `/fetch-web` instead
+per the "When NOT to use" section below.
 
 ## When NOT to use this skill
 
@@ -364,6 +367,14 @@ YAML and JSON skeletons users copy and fill. All sit at the skill root under `te
 | [Troubleshooting](references/troubleshooting.md)               | Symptoms, causes, fixes; what to try before escalating          |
 | [Complete SDK Reference](references/complete-sdk-reference.md) | Full API documentation (5900+ lines)                            |
 | [Escalation](references/escalation.md)                         | Lookup order, iron rule, halt-vs-continue, worked examples      |
+
+### Related learnings
+
+-
+  [`docs/solutions/developer-experience/skill-version-spdx-and-upstream-mirror-provenance.md`](../docs/solutions/developer-experience/skill-version-spdx-and-upstream-mirror-provenance.md)
+  is the worked precedent for this skill's `VERSION` banner, per-file SPDX headers, and pinned-SHA upstream-mirror
+  convention. Read that doc when refreshing the version pin, adding new bundled scripts/templates, or refreshing
+  `references/complete-sdk-reference.md` from upstream.
 
 ---
 

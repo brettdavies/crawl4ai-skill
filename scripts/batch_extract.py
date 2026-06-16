@@ -28,7 +28,12 @@ from crawl4ai.extraction_strategy import JsonCssExtractionStrategy
 def load_urls(source: str) -> List[str]:
     p = Path(source)
     if p.exists():
-        return [line.strip() for line in p.read_text().splitlines() if line.strip() and not line.startswith("#")]
+        out = []
+        for line in p.read_text().splitlines():
+            stripped = line.strip()
+            if stripped and not stripped.startswith("#"):
+                out.append(stripped)
+        return out
     return [u.strip() for u in source.split(",") if u.strip()]
 
 
@@ -39,7 +44,7 @@ async def batch_extract(urls: List[str], schema: dict, max_concurrent: int, out_
     crawler_config = CrawlerRunConfig(
         extraction_strategy=extraction_strategy,
         cache_mode=CacheMode.BYPASS,
-        wait_for="css:body",
+        wait_until="networkidle",
     )
 
     extracted: list[dict] = []

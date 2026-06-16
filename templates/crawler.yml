@@ -12,6 +12,7 @@ scan_full_page: true          # handle infinite scroll
 scroll_delay: 0.3
 process_iframes: false
 remove_overlay_elements: true # cookie banners, modals
+# magic: true                  # convenience: enables several stealth features at once (see complete-sdk-reference.md)
 verbose: false
 
 # wait_for: "css:.dynamic-content"    # CSS selector to wait for

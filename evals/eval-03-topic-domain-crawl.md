@@ -23,10 +23,15 @@ Plan the approach, then execute.
 
 ## Regression-test prior fixes
 
-After eval-01 and eval-02. Verify:
+After eval-01 and eval-02. Verify each by file + section + expected substance:
 
-- **Schema-generation pipeline is still documented** (eval-02). Classify `worked` / `regressed` / `not-touched`.
-- **JS-rendered page handling is still documented** (eval-01). Classify same.
+- **Schema-generation pipeline** (eval-02). `references/recipes.md` § 3 ("E-commerce product list across many URLs")
+  still names `scripts/generate_schema.py` → `scripts/extract_with_schema.py` → `scripts/batch_extract.py` in that
+  order. Classify `worked` / `regressed` / `not-touched`.
+- **JS-rendered page handling** (eval-01). `references/troubleshooting.md` § "JavaScript content not loading" still
+  documents `wait_for=css:<selector>` and the JS-predicate fallback. Classify same.
+- **Default routing is not the placebo wait** (eval-01). `SKILL.md` § "Invoked with a URL argument" uses
+  `wait_until=networkidle` (or stricter), not `wait_for=css:body`. Classify same.
 
 Any `regressed` is blocking.
 
@@ -46,9 +51,11 @@ Any `regressed` is blocking.
 
 ## Dry-run gate
 
-If you can't actually reach the network, do a `--dry-run` equivalent: print the commands that would execute, with the
-resolved arguments. Save to `dryrun-output.txt`. The score caps at 5 if `dryrun-output.txt` is missing for
-network-blocked runs.
+If you can't actually reach the network, you still must *execute* the discovery call against a stub or short-circuit
+fixture — not just print the planned command. Capture stdout + stderr + exit code from `python -c "..."` (or
+`./scripts/...`) into `dryrun-output.txt`. The point is to surface API-shape bugs (wrong `SeedingConfig` field name,
+`score_threshold` type mismatch) that "printing the plan" hides. Score caps at 5 if `dryrun-output.txt` is missing or
+only contains a planned-command echo with no actual interpreter output.
 
 ## What NOT to do
 

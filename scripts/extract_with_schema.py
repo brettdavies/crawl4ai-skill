@@ -32,7 +32,7 @@ async def extract(url: str, schema_path: Path, output_file: Path) -> dict | None
 
     schema = json.loads(schema_path.read_text())
     extraction_strategy = JsonCssExtractionStrategy(schema=schema, verbose=False)
-    crawler_config = CrawlerRunConfig(extraction_strategy=extraction_strategy, wait_for="css:body")
+    crawler_config = CrawlerRunConfig(extraction_strategy=extraction_strategy, wait_until="networkidle")
 
     async with AsyncWebCrawler() as crawler:
         result = await crawler.arun(url=url, config=crawler_config)

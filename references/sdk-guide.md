@@ -386,3 +386,4 @@ For session patterns: [Advanced Features - Session Management](complete-sdk-refe
 
 - [CLI Guide](cli-guide.md) - Command-line interface alternative
 - [Complete SDK Reference](complete-sdk-reference.md) - Full API documentation
+- [Escalation](escalation.md) - Lookup order when a field name, return shape, or import path doesn't match this guide

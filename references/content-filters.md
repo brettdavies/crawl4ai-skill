@@ -100,3 +100,8 @@ print(result.markdown.fit_markdown)   # filtered, or None if no filter
 
 `raw_markdown` is useful as a fallback when the filter produces empty output (e.g. the threshold was too aggressive).
 Log both during tuning.
+
+## When stuck
+
+For a filter constructor that raises on a kwarg this page doesn't name, or `fit_markdown` that comes back unexpectedly
+empty, see [escalation.md](escalation.md) for the lookup order and worked examples.

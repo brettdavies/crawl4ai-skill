@@ -102,5 +102,6 @@ asyncio.run(main())
 ```
 
 The seeder + mapper APIs are documented in detail in [`complete-sdk-reference.md`](complete-sdk-reference.md). When the
-field names here diverge from the installed library, verify against the installed version (`crawl4ai.__version__`) and
-the `VERSION` file at the skill root.
+field names here diverge from the installed library, verify against the installed version (`crwl --version` or `python
+-c "import importlib.metadata; print(importlib.metadata.version('crawl4ai'))"`) and the `VERSION` file at the skill
+root. When stuck, see [escalation.md](escalation.md) for the full lookup order.

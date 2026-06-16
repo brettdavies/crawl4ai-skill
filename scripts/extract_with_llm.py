@@ -42,7 +42,7 @@ async def extract(url: str, instruction: str, output_file: Path) -> dict | None:
 
     crawler_config = CrawlerRunConfig(
         extraction_strategy=extraction_strategy,
-        wait_for="css:body",
+        wait_until="networkidle",
         remove_overlay_elements=True,
     )
 

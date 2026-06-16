@@ -28,7 +28,12 @@ from crawl4ai import AsyncWebCrawler, BrowserConfig, CacheMode, CrawlerRunConfig
 def load_urls(source: str) -> List[str]:
     p = Path(source)
     if p.exists():
-        return [line.strip() for line in p.read_text().splitlines() if line.strip() and not line.startswith("#")]
+        out = []
+        for line in p.read_text().splitlines():
+            stripped = line.strip()
+            if stripped and not stripped.startswith("#"):
+                out.append(stripped)
+        return out
     return [u.strip() for u in source.split(",") if u.strip()]
 
 
@@ -45,7 +50,7 @@ async def batch_crawl(urls: List[str], max_concurrent: int, out_dir: Path) -> di
     crawler_config = CrawlerRunConfig(
         cache_mode=CacheMode.BYPASS,
         remove_overlay_elements=True,
-        wait_for="css:body",
+        wait_until="networkidle",
         page_timeout=30000,
         screenshot=False,
     )

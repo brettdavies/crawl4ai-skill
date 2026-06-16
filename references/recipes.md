@@ -62,15 +62,18 @@ schema by hand (see
 Goal: collect markdown from many news sites, filtered by topic relevance.
 
 ```bash
-# Per-source BM25-filtered markdown
+# Copy the filter template, set the topic-specific query, then crawl per URL
+cp templates/filter_bm25.yml /tmp/news_filter.yml
+$EDITOR /tmp/news_filter.yml      # set query: to your topic; tune threshold
+
 for url in $(cat news_urls.txt); do
   slug=$(echo "$url" | sed 's|https://||; s|/|_|g')
-  crwl "$url" -f templates/filter_bm25.yml -o markdown-fit > "news/$slug.md"
+  crwl "$url" -f /tmp/news_filter.yml -o markdown-fit > "news/$slug.md"
 done
 ```
 
-Edit `templates/filter_bm25.yml` to set the `query` to your topic before running. Tune `threshold` up if the filter
-keeps too much noise.
+Edit the *copy*, not the bundled `templates/filter_bm25.yml` — the template is a skeleton meant to seed many filters,
+not to be mutated in place.
 
 For semantic relevance (e.g. when the topic vocabulary doesn't match the article's vocabulary), switch to
 `LLMContentFilter` per [Content Filters § LLMContentFilter](content-filters.md#llmcontentfilter).
@@ -164,5 +167,5 @@ crwl https://example.com -q "What are the main conclusions?"  # ask
 crwl https://example.com -q "Summarize in 3 bullets"
 ```
 
-First-time setup prompts for the LLM provider and API token; stored in `~/.crawl4ai/global.yml`. Supports
-`openai/gpt-4`, `anthropic/claude-3-sonnet`, and any LiteLLM-supported provider.
+First-time setup prompts for the LLM provider and API token; stored in `~/.crawl4ai/global.yml`. Any LiteLLM-supported
+provider works — pick a current model identifier from <https://docs.litellm.ai/docs/providers>.

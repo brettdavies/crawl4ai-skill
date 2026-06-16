@@ -22,7 +22,10 @@ to prevent.
 - Running `crwl --help`, `crwl --example`, `crwl --version`
 - Running `crawl4ai-doctor` to diagnose the local install
 - Reading any file under this skill (SKILL.md, references, scripts, tests)
-- Running `python -c "import crawl4ai; print(crawl4ai.__version__)"` to check the installed version
+- Running `python -c "import importlib.metadata; print(importlib.metadata.version('crawl4ai'))"` (or `crwl --version`)
+  to check the installed version. **Note:** `crawl4ai.__version__` is itself a module in 0.8.x, so the obvious
+  `print(crawl4ai.__version__)` form prints the module repr, not the version string. Use `importlib.metadata.version`
+  instead.
 - Running the bundled `tests/` against `example.com` — they're read-only smoke checks
 
 The prohibition is on inventing names; verifying via `--help`, reading source, or running a non-mutating probe never
@@ -38,8 +41,8 @@ qualifies.
    reference is 5900+ lines; jump to the anchor (e.g. `#extraction-strategies`, `#content-processing`) rather than
    scanning linearly.
 3. **Upstream documentation** — `https://docs.crawl4ai.com/` for current docs. Confirm the installed version with
-   `python -c "import crawl4ai; print(crawl4ai.__version__)"` and check against the skill's [`VERSION`](../VERSION) file
-   if surface names look wrong.
+   `python -c "import importlib.metadata; print(importlib.metadata.version('crawl4ai'))"` (or `crwl --version`) and
+   check against the skill's [`VERSION`](../VERSION) file if surface names look wrong.
 4. **Upstream source + issues** — `https://github.com/unclecode/crawl4ai`. Search `Issues` for the error message
    verbatim before re-deriving a fix. The codebase is small enough to grep when an API rename is suspected.
 5. **`qmd query --collection stars`** — community blog posts, tutorials, and third-party examples mirrored in stars.
@@ -64,8 +67,8 @@ qualifies.
 - A `wait_for` or `js_code` snippet would interact with destructive UI (delete buttons, transfer flows). Even in QA,
   ask.
 - The library raised an error message that explicitly names a config field you didn't set — likely a version bump
-  renamed your surface. Verify the actual version (`crawl4ai.__version__`) and the field name in the installed source
-  before patching.
+  renamed your surface. Verify the actual version (`importlib.metadata.version('crawl4ai')`) and the field name in the
+  installed source before patching.
 - The site's robots.txt or ToS would plausibly forbid scraping — ask the user about authorization before crawling.
 
 ## Worked examples

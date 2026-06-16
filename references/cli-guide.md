@@ -214,8 +214,8 @@ crwl https://example.com \
 
 - Prompts for LLM provider and API token
 - Saves configuration in `~/.crawl4ai/global.yml`
-- Supports: openai/gpt-4, anthropic/claude-3-sonnet, ollama (no token needed)
-- See [LiteLLM Providers](https://docs.litellm.ai/docs/providers) for full list
+- Any LiteLLM-supported provider works; pick a current model identifier from
+  [LiteLLM Providers](https://docs.litellm.ai/docs/providers). `ollama/*` providers need no token.
 
 ### Structured Data Extraction
 
@@ -226,10 +226,9 @@ crwl https://example.com \
     -s css_schema.json \
     -o json
 
-# LLM-based extraction
+# LLM-based extraction (schema lives inside extract_llm.yml; no -s needed)
 crwl https://example.com \
     -e extract_llm.yml \
-    -s llm_schema.json \
     -o json
 ```
 
@@ -243,10 +242,10 @@ type: "bm25"
 query: "target content"
 threshold: 1.0
 
-# filter_pruning.yml (quality-based)
+# filter_pruning.yml (quality-based — no query; heuristic block pruning)
 type: "pruning"
-query: "focus topic"
 threshold: 0.48
+threshold_type: "fixed"
 ```
 
 ```bash
@@ -295,7 +294,6 @@ crwl https://example.com \
 crwl https://example.com \
     -B browser.yml \
     -e extract_llm.yml \
-    -s llm_schema.json \
     -f filter_bm25.yml \
     -o json
 ```
@@ -357,3 +355,5 @@ The Crawl4AI CLI provides:
 
 - [Python SDK Guide](sdk-guide.md) - Programmatic Python interface
 - [Complete SDK Reference](complete-sdk-reference.md) - Full API documentation
+- [Escalation](escalation.md) - What to do when an unknown flag, an empty extraction, or a version-drift surface
+  surprises you
