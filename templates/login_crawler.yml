@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: MIT OR Apache-2.0
+# Login-and-persist-session CrawlerRunConfig template.
+# Step 1: `crwl https://site.com/login -C login_crawler.yml`
+# Step 2: `crwl https://site.com/protected -c "session_id=user_session"`
+# Field reference: `references/complete-sdk-reference.md#advanced-features`.
+
+session_id: "user_session"
+wait_for: "css:.dashboard"    # wait for post-login UI to render
+page_timeout: 60000           # logins can be slow
+
+js_code: |
+  document.querySelector('#username').value = '<your-username>';
+  document.querySelector('#password').value = '<your-password>';
+  document.querySelector('#submit').click();

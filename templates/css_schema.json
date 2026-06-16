@@ -1,0 +1,10 @@
+{
+  "name": "items",
+  "baseSelector": "<css-selector-matching-each-item>",
+  "fields": [
+    {"name": "title", "selector": "<selector-relative-to-baseSelector>", "type": "text"},
+    {"name": "price", "selector": "<selector>", "type": "text"},
+    {"name": "link", "selector": "a", "type": "attribute", "attribute": "href"},
+    {"name": "image", "selector": "img", "type": "attribute", "attribute": "src"}
+  ]
+}

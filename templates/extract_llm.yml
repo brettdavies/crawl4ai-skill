@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: MIT OR Apache-2.0
+# LLMExtractionStrategy template. Copy, fill, pass via
+# `crwl <url> -e extract_llm.yml -o json`.
+# Provider list: https://docs.litellm.ai/docs/providers
+# Field reference: `references/complete-sdk-reference.md#extraction-strategies`.
+
+type: "llm"
+provider: "openai/gpt-4o-mini"        # any LiteLLM-supported provider
+instruction: "Extract product names and prices as a JSON array."
+api_token: "${OPENAI_API_KEY}"        # use env var; never inline a real key
+params:
+  temperature: 0.3
+  max_tokens: 1000
+# extraction_type: "schema"           # default since 0.8.7; omit unless overriding

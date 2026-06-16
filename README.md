@@ -1,6 +1,8 @@
 # Crawl4AI Claude Skill
 
-A comprehensive Claude skill for web crawling and data extraction using Crawl4AI. This skill enables Claude to scrape websites, extract structured data, handle JavaScript-heavy pages, crawl multiple URLs, and build automated web data pipelines.
+A comprehensive Claude skill for web crawling and data extraction using Crawl4AI. This skill enables Claude to scrape
+websites, extract structured data, handle JavaScript-heavy pages, crawl multiple URLs, and build automated web data
+pipelines.
 
 ## Features
 
@@ -14,27 +16,28 @@ A comprehensive Claude skill for web crawling and data extraction using Crawl4AI
 
 ## Installation
 
-### Method 1: Import as ZIP (Recommended for Claude Desktop)
+### Claude Code (load directly from a directory)
 
-1. Download or clone this repository
-2. Create a ZIP file of the `crawl4ai` directory:
+```bash
+git clone https://github.com/brettdavies/crawl4ai-skill.git ~/.claude/skills/crawl4ai
+```
 
-   ```bash
-   cd crawl4ai-skill
-   zip -r crawl4ai.zip crawl4ai/
-   ```
+Claude Code reads `SKILL.md` at the directory root.
 
-3. In Claude Desktop, go to Settings → Developer → Import Skill
-4. Select the `crawl4ai.zip` file
+### Claude Desktop (import a zip)
 
-### Method 2: Git Clone
+Claude Desktop expects the zip to contain a single top-level directory whose name matches the skill. Stage the skill
+files under a `crawl4ai/` wrapper before zipping:
 
 ```bash
 git clone https://github.com/brettdavies/crawl4ai-skill.git
 cd crawl4ai-skill
+mkdir -p /tmp/crawl4ai-pkg/crawl4ai
+cp -r SKILL.md VERSION references scripts tests templates evals fixtures /tmp/crawl4ai-pkg/crawl4ai/
+( cd /tmp/crawl4ai-pkg && zip -r crawl4ai.zip crawl4ai/ )
 ```
 
-Then add the skill directory to Claude's skills folder or import via Claude Desktop.
+Then in Claude Desktop go to Settings → Developer → Import Skill and select `/tmp/crawl4ai-pkg/crawl4ai.zip`.
 
 ## Prerequisites
 
@@ -79,10 +82,10 @@ asyncio.run(main())
 
 ## Documentation
 
-- **[SKILL.md](crawl4ai/SKILL.md)** - Complete skill documentation with examples
-- **[CLI Guide](crawl4ai/references/cli-guide.md)** - Command-line interface reference
-- **[SDK Guide](crawl4ai/references/sdk-guide.md)** - Python SDK quick reference
-- **[Complete SDK Reference](crawl4ai/references/complete-sdk-reference.md)** - Full API documentation (5900+ lines)
+- **[SKILL.md](SKILL.md)** - Complete skill documentation with examples
+- **[CLI Guide](references/cli-guide.md)** - Command-line interface reference
+- **[SDK Guide](references/sdk-guide.md)** - Python SDK quick reference
+- **[Complete SDK Reference](references/complete-sdk-reference.md)** - Full API documentation (5900+ lines)
 
 ## Common Use Cases
 
@@ -96,10 +99,10 @@ crwl https://docs.example.com -o markdown > docs.md
 
 ```bash
 # Generate schema once (uses LLM)
-python crawl4ai/scripts/extraction_pipeline.py --generate-schema https://shop.com "extract products"
+./scripts/generate_schema.py https://shop.com "products with name, price, image" shop_schema.json
 
-# Use schema for extraction (no LLM costs)
-crwl https://shop.com -e extract_css.yml -s product_schema.json -o json
+# Apply the saved schema (no LLM cost per request)
+./scripts/extract_with_schema.py https://shop.com shop_schema.json products.json
 ```
 
 ### News Aggregation
@@ -113,18 +116,21 @@ done
 
 ## Scripts
 
-The skill includes helper scripts in `crawl4ai/scripts/`:
+The skill includes helper scripts in `scripts/`:
 
-- **basic_crawler.py** - Simple markdown extraction
-- **batch_crawler.py** - Multi-URL processing
-- **extraction_pipeline.py** - Schema generation and extraction
+- **basic_crawler.py** - One URL → markdown + screenshot
+- **batch_crawl.py** - Many URLs → markdown files
+- **batch_extract.py** - Many URLs + schema → JSON
+- **generate_schema.py** - Derive a reusable CSS schema (one-time LLM call)
+- **extract_with_schema.py** - Apply a saved schema (no LLM)
+- **extract_with_llm.py** - Per-request LLM extraction (expensive; one-off only)
 
 ## Testing
 
 Run the test suite to verify the skill works correctly:
 
 ```bash
-cd crawl4ai/tests
+cd tests
 python run_all_tests.py
 ```
 
@@ -136,7 +142,8 @@ This skill is available on Claude Skills marketplaces:
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+Dual-licensed under Apache License 2.0 ([LICENSE-APACHE](LICENSE-APACHE)) or MIT License ([LICENSE-MIT](LICENSE-MIT)) at
+your option. SPDX identifier: `MIT OR Apache-2.0`. See [LICENSE](LICENSE) for the full notice.
 
 ## Contributing
 
