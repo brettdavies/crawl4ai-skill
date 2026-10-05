@@ -1,0 +1,31 @@
+# >>> canonical gitattributes >>>
+# Git attributes: canonical source ~/dotfiles/stow/claude/dot-claude/templates/gitattributes
+# Canonical version: 2026.10.05
+#
+# Copied byte for byte to the top of each repository's .gitattributes. Text is
+# stored with LF and checked out with LF on every platform, whatever
+# core.autocrlf says. The paths below keep the bytes they were committed with.
+# Repository-specific lines (Git LFS, linguist, merge drivers) follow the end
+# marker and override this block: for each attribute, the last matching line
+# wins.
+
+* text=auto eol=lf
+
+# iCalendar (RFC 5545) and email (RFC 5322) lines end in CRLF, and a DKIM
+# signature covers the exact bytes. `-text`, not `!text`: with `text`
+# unspecified, the `eol=lf` above still converts CRLF on commit.
+*.ics -text
+*.eml -text
+
+# Tests compare these byte for byte.
+*.golden -text
+*.snap -text
+**/fixtures/** -text
+**/testdata/** -text
+**/golden/** -text
+**/__snapshots__/** -text
+
+# A PDF with no NUL byte passes Git's text detection, and converting its CRLF
+# lines shifts the byte offsets its xref table records.
+*.pdf binary
+# <<< canonical gitattributes <<<

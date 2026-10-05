@@ -1,0 +1,87 @@
+# EditorConfig: canonical source ~/dotfiles/stow/claude/dot-editorconfig
+# Canonical version: 2026.10.05
+#
+# Stowed to ~/.editorconfig and copied byte for byte into each repository. A
+# copy whose `Canonical version` line trails the canonical file has drifted.
+#
+# Each section mirrors the formatter that owns the file type (shfmt, Biome,
+# Prettier, rustfmt, ruff, SwiftFormat, gofmt, markdownlint), so an editor
+# writes what that formatter would. shfmt and Prettier also read this file. A
+# key in a Prettier config overrides the matching key here; any formatting flag
+# on the shfmt command line makes shfmt ignore every formatting key here.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Two trailing spaces are a markdown hard break (markdownlint MD009 br_spaces).
+# Line length stays with each repo's markdownlint MD013.
+[*.{md,mdx,mdc}]
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = false
+
+[*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,astro,vue,json,jsonc,css,html,svg,yml,yaml,rb,lua,typ}]
+indent_style = space
+indent_size = 2
+
+[*.{sh,bash,bats}]
+indent_style = space
+indent_size = 2
+switch_case_indent = true
+binary_next_line = true
+
+# shfmt matches this section by shebang, which covers extensionless hook scripts.
+[[shell]]
+indent_style = space
+indent_size = 2
+switch_case_indent = true
+binary_next_line = true
+
+[*.{py,pyi}]
+indent_style = space
+indent_size = 4
+max_line_length = 88
+
+[*.rs]
+indent_style = space
+indent_size = 4
+max_line_length = 100
+
+[*.swift]
+indent_style = space
+indent_size = 4
+
+# gofmt, Xcode, git, VS Code and Caddy write tabs; TSV uses them as delimiters.
+[{*.go,go.mod,go.work,*.tsv,Caddyfile,.gitmodules,*.pbxproj,*.plist,*.entitlements,*.code-workspace}]
+indent_style = tab
+
+# iCalendar (RFC 5545) and email (RFC 5322) lines end in CRLF.
+[*.{ics,eml}]
+end_of_line = crlf
+trim_trailing_whitespace = false
+insert_final_newline = unset
+
+# Shell completions and the Powerlevel10k config are generated; regenerate them
+# instead of reformatting. `ignore` makes a shfmt directory walk, or
+# `shfmt --apply-ignore`, skip them; an explicit path without that flag is
+# reformatted with tabs.
+[**/{completions/**,*p10k.zsh}]
+indent_style = unset
+indent_size = unset
+ignore = true
+
+# Tests compare these byte for byte, so every setting is left unset.
+[**/{*.golden,*.snap,fixtures/**,testdata/**,golden/**,__snapshots__/**}]
+charset = unset
+end_of_line = unset
+insert_final_newline = unset
+trim_trailing_whitespace = unset
+indent_style = unset
+indent_size = unset
+switch_case_indent = unset
+binary_next_line = unset
+ignore = true
